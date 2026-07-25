@@ -6,6 +6,8 @@ public class reverseoriginalloop{
             array[i]=array[array.length-i-1];
             array[array.length-i-1]=temp;
         }
-        fo
+        for (int i = 0; i < array.length; i++) {
+            
+        }
     }
 }

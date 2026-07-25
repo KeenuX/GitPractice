@@ -1,1 +1,1 @@
-git add .     (or filename )
+git add .     (or filename of the code instead of .)

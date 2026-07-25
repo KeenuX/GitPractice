@@ -1,3 +1,3 @@
 public class reverseoriginalloop{
-    public sta
+    public static void mia
 }

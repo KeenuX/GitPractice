@@ -1,1 +1,1 @@
-git add .     (or fil)
+git add .     (or filename )

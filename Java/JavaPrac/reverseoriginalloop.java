@@ -10,4 +10,4 @@ public class reverseoriginalloop{
             System.out.println(array[i]);
 
     }
-}
+}}

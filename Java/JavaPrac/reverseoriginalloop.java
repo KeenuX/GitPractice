@@ -3,7 +3,7 @@ public class reverseoriginalloop{
         int[] array={1,2,3,4,5};
         for (int i = 0; i < array.length/2; i++) {
             int temp=array[i];
-            ar
+            array[i]=array[]
         }
     }
 }

@@ -1,1 +1,1 @@
-public class JavaPrac/reverseoriginalloop.
+public class reverseoriginalloop

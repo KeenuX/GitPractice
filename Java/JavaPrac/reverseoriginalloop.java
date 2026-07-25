@@ -1,3 +1,3 @@
 public class reverseoriginalloop{
-    pub
+    public sta
 }

@@ -1,3 +1,3 @@
 public class reverseoriginalloop{
-    public static void main(A)
+    public static void main(String)
 }

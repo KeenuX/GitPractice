@@ -1,50 +1,44 @@
 import time
 import subprocess
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
 
 # Your practice folder path
 WATCH_DIR = r"C:\Users\keenu\OneDrive\Desktop\GitPractice"
 
-class AutoCommitHandler(FileSystemEventHandler):
-    def on_modified(self, event):
-        # Ignore changes inside the hidden .git folder to prevent infinite loops!
-        if ".git" in event.src_path:
-            return
-            
-        print(f"\n[+] Save detected: {event.src_path}")
+# How often to sync (in seconds). 900 seconds = 15 minutes.
+# You can change this to 1800 for 30 minutes, or 3600 for 1 hour.
+SYNC_INTERVAL = 900  
+
+print(f"Starting batch sync in {WATCH_DIR}...")
+print(f"Bundling saves every {SYNC_INTERVAL // 60} minutes. Keep this open while coding!")
+
+try:
+    while True:
+        # Wait for the interval duration
+        time.sleep(SYNC_INTERVAL)
         
-        try:
-            # 1. Stage all changes
+        # Check if there are any uncommitted changes
+        status = subprocess.run(
+            ["git", "status", "--porcelain"], 
+            cwd=WATCH_DIR, 
+            capture_output=True, 
+            text=True
+        )
+        
+        # If the output isn't empty, changes exist
+        if status.stdout.strip():
+            print("\n[*] Changes detected. Bundling and pushing...")
+            
             subprocess.run(["git", "add", "."], cwd=WATCH_DIR)
             
-            # 2. Attempt to commit the changes
-            commit_time = time.strftime('%Y-%m-%d %H:%M:%S')
-            commit_cmd = ["git", "commit", "-m", f"Auto-save: {commit_time}"]
+            commit_time = time.strftime('%Y-%m-%d %H:%M')
+            subprocess.run(["git", "commit", "-m", f"Practice session update: {commit_time}"], cwd=WATCH_DIR)
             
-            # We capture the output to see if there were actually files to commit
-            result = subprocess.run(commit_cmd, cwd=WATCH_DIR, capture_output=True)
+            push_result = subprocess.run(["git", "push", "origin", "main"], cwd=WATCH_DIR)
             
-            # 3. Push ONLY if the commit was successful (meaning new code was saved)
-            if result.returncode == 0:
-                print("[*] Pushing to GitHub...")
-                subprocess.run(["git", "push", "origin", "main"], cwd=WATCH_DIR)
-                print("[+] Successfully synced to GitHub!")
+            if push_result.returncode == 0:
+                print(f"[+] Successfully batched and synced at {commit_time}!")
+            else:
+                print("[-] Push failed. Will try again next cycle.")
                 
-        except Exception as e:
-            print(f"[-] Error during Git sync: {e}")
-
-if __name__ == "__main__":
-    observer = Observer()
-    observer.schedule(AutoCommitHandler(), path=WATCH_DIR, recursive=True)
-    observer.start()
-    
-    print(f"Watching for file saves in {WATCH_DIR}...")
-    print("Keep this terminal open while you code. Press Ctrl+C to stop.")
-    
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
-    observer.join()
+except KeyboardInterrupt:
+    print("\nAuto-sync stopped by user.")
